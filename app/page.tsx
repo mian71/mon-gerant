@@ -147,31 +147,40 @@ export default function Home() {
 
     return () => { supabase.removeChannel(channel) }
   }, [boutiqueId, ventes])
-
-  const creerBoutique = async () => {
+const creerBoutique = async () => {
     const nom = prompt('Nom du maquis ?') || 'Mon Maquis'
     const code = Math.random().toString(36).substring(2, 8).toUpperCase()
+    const idLocal = 'local-' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6)
 
-    const { data, error } = await supabase
-      .from('boutiques')
-      .insert([{ nom, code }])
-      .select()
-      .single()
-
-    if (error) { alert('Erreur: ' + error.message); return }
-
-    // Version adaptée à TON code
-    setBoutiqueId(data.id)
-    setCodeBoutique(data.code)
-    setNomBoutique(data.nom)
+    // 1. On sauvegarde EN LOCAL d'abord, ça marche toujours
+    setBoutiqueId(idLocal)
+    setCodeBoutique(code)
+    setNomBoutique(nom)
     setRole('gerant')
-    localStorage.setItem('boutique-id-mon-gerant', data.id)
-    localStorage.setItem('code-boutique-mon-gerant', data.code)
-    localStorage.setItem('nom-boutique-mon-gerant', data.nom)
+    localStorage.setItem('boutique-id-mon-gerant', idLocal)
+    localStorage.setItem('code-boutique-mon-gerant', code)
+    localStorage.setItem('nom-boutique-mon-gerant', nom)
     localStorage.setItem('role-boutique-mon-gerant', 'gerant')
+
+    // 2. On essaie Supabase en bonus, mais si ça échoue on s'en fiche
+    try {
+      const { data } = await supabase
+        .from('boutiques')
+        .insert([{ nom, code }])
+        .select()
+        .single()
+      if (data) {
+        // Si Supabase a marché, on prend son vrai ID
+        setBoutiqueId(data.id)
+        localStorage.setItem('boutique-id-mon-gerant', data.id)
+      }
+    } catch (e) {
+      console.log('Mode offline, boutique locale utilisée')
+    }
+
     alert(`Boutique créée ! Code : ${code} - Partage-le à ton équipe`)
   }
-  const chargerProduitsDepuisSupabase = async (idBoutique: string) => {
+    const chargerProduitsDepuisSupabase = async (idBoutique: string) => {
     const { data, error } = await supabase
       .from('produits')
       .select('*')
