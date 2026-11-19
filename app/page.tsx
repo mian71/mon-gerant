@@ -214,22 +214,39 @@ const creerBoutique = async () => {
   }
 
   const rejoindreBoutique = async () => {
-    if (!inputCode) return alert('Mets le code')
+    const codeSaisi = prompt('Entre le code du maquis ?')
+    if (!codeSaisi) return
+    const codePropre = codeSaisi.trim().toUpperCase()
 
-    const { data, error } = await supabase
-      .from('boutiques')
-      .select('*')
-      .eq('code', inputCode.trim().toUpperCase())
-      .single()
+    // On essaie de retrouver le maquis sur Supabase
+    try {
+      const { data } = await supabase.from('boutiques').select('*').eq('code', codePropre).single()
+      if (data) {
+        setBoutiqueId(data.id)
+        setCodeBoutique(data.code)
+        setNomBoutique(data.nom)
+        setRole('gerant')
+        localStorage.setItem('boutique-id-mon-gerant', data.id)
+        localStorage.setItem('code-boutique-mon-gerant', data.code)
+        localStorage.setItem('nom-boutique-mon-gerant', data.nom)
+        localStorage.setItem('role-boutique-mon-gerant', 'gerant')
+        alert(`Connecté au maquis ${data.nom} !`)
+        return
+      }
+    } catch (e) { console.log('Pas trouvé en ligne, on essaie en local') }
 
-    if (error || !data) return alert('Code introuvable')
-
-    setBoutique(data)
-    chargerProduitsDepuisSupabase(data.id)
-    localStorage.setItem('boutique', JSON.stringify(data))
-    setVue('ventes')
+    // Sinon, mode local : on accepte le code tel quel
+    const idLocal = 'local-' + codePropre
+    setBoutiqueId(idLocal)
+    setCodeBoutique(codePropre)
+    setNomBoutique('Maquis ' + codePropre)
+    setRole('gerant')
+    localStorage.setItem('boutique-id-mon-gerant', idLocal)
+    localStorage.setItem('code-boutique-mon-gerant', codePropre)
+    localStorage.setItem('nom-boutique-mon-gerant', 'Maquis ' + codePropre)
+    localStorage.setItem('role-boutique-mon-gerant', 'gerant')
+    alert(`Connecté avec le code ${codePropre} !`)
   }
-
 
   const nomAffiche = nomBoutique.trim() || "Mon Gérant"
   const totalBrut = panier.reduce((s, p) => s + p.prix, 0)
@@ -811,14 +828,14 @@ const creerBoutique = async () => {
       {/* --- BOUTIQUE TEMPS RÉEL --- */}
       {!boutiqueId ? (
         <div style={{ background: '#fff3cd', padding: 12, borderRadius: 10, marginBottom: 12, textAlign: 'center' }}>
-          <b>🔗 Mode Multi-Boutiques</b><br />
-          <button onClick={() => creerBoutique(prompt('Nom du maquis ?') || 'Mon Maquis')} style={{ background: '#000', color: '#fff', padding: '8px 12px', borderRadius: 8, margin: 4 }}>
-            Je suis Patron - Créer
-          </button>
-          <button onClick={rejoindreBoutique} style={{ background: '#fff', border: '1px solid #000', padding: '8px 12px', borderRadius: 8, margin: 4 }}>
-            Je suis Gérant - Entrer Code
-          </button>
-        </div>
+         <b>🔗 Mode Multi-Boutiques</b><br />
+  <button onClick={creerBoutique} style={{ background: '#000', color: '#fff', padding: '8px 12px', borderRadius: 8, margin: 4 }}>
+    Je suis Patron - Créer
+  </button>
+  <button onClick={rejoindreBoutique} style={{ background: '#fff', border: '1px solid #000', padding: '8px 12px', borderRadius: 8, margin: 4 }}>
+    Je suis Gérant - Entrer Code
+  </button>
+</div>
       ) : (
         <div style={{ background: '#d4edda', padding: 10, borderRadius: 10, marginBottom: 12, textAlign: 'center' }}>
           ✅ Connecté à : <b>{codeBoutique}</b> — Rôle : <b>{role}</b><br />
