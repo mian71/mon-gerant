@@ -508,10 +508,61 @@ export default function Home() {
     const nouvelle = Math.max(1, Math.min(99, actuelle + delta))
     setQuantites({ ...quantites, [idx]: nouvelle })
   }
-  const ajouterProduit = () => {
+  const ajouterProduit = async () => {
     if (!nouveauNom || !nouveauPrix) return
-    setProduits([...produits, { nom: nouveauNom, prix: Number(nouveauPrix), stock: Number(nouveauStock) || 0, achat: Number(nouvelAchat) || 0 }])
+    
+    const nouveauProduitLocal = { 
+      nom: nouveauNom, 
+      prix_vente: Number(nouveauPrix), 
+      prix_achat: Number(nouvelAchat) || 0,
+      stock: Number(nouveauStock) || 0,
+      boutique_id: boutiqueId
+    }
+
+    // 1. Affichage immédiat en local
+    // On garde aussi prix/achat pour l'affichage actuel de ton app
+    setProduits([...produits, { ...nouveauProduitLocal, prix: nouveauProduitLocal.prix_vente, achat: nouveauProduitLocal.prix_achat }])
     setNouveauNom(""); setNouveauPrix(""); setNouveauStock(""); setNouvelAchat("")
+
+    // 2. Envoi à Supabase avec LES BONS NOMS DE COLONNES
+    // Si boutiqueId est "local-..." ce n'est pas un UUID, Supabase va refuser
+    if (!boutiqueId || boutiqueId.startsWith('local-')) {
+      alert('Attention : ce maquis est en mode local, il ne peut pas se synchroniser. Recrée un maquis pour avoir un vrai ID Supabase.')
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('produits')
+        .insert([{
+          nom: nouveauNom,
+          prix_vente: Number(nouveauPrix),
+          prix_achat: Number(nouvelAchat) || 0,
+          stock: Number(nouveauStock) || 0,
+          boutique_id: boutiqueId
+        }])
+        .select()
+        .single()
+      
+      if (error) {
+        console.log('Erreur Supabase produits:', error.message)
+        // Si le produit existe déjà (unique boutique_id + nom), on fait un UPDATE
+        if (error.code === '23505') {
+          await supabase.from('produits').update({
+            prix_vente: Number(nouveauPrix),
+            prix_achat: Number(nouvelAchat) || 0,
+            stock: Number(nouveauStock) || 0
+          }).eq('boutique_id', boutiqueId).eq('nom', nouveauNom)
+          alert('Produit déjà existant, stock mis à jour !')
+        } else {
+          alert('Erreur synchro: ' + error.message)
+        }
+      } else {
+        console.log('Produit synchronisé !', data)
+      }
+    } catch (e) {
+      console.log('Mode offline', e)
+    }
   }
   const ouvrirEdit = (idx: number) => {
     const p = produits[idx]
