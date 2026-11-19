@@ -147,7 +147,8 @@ export default function Home() {
 
     return () => { supabase.removeChannel(channel) }
   }, [boutiqueId, ventes])
-const creerBoutique = async () => {
+
+  const creerBoutique = async () => {
     const nom = prompt('Nom du maquis ?') || 'Mon Maquis'
     const code = Math.random().toString(36).substring(2, 8).toUpperCase()
     const idLocal = 'local-' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6)
@@ -156,11 +157,11 @@ const creerBoutique = async () => {
     setBoutiqueId(idLocal)
     setCodeBoutique(code)
     setNomBoutique(nom)
-    setRole('gerant')
+    setRole('patron')
     localStorage.setItem('boutique-id-mon-gerant', idLocal)
     localStorage.setItem('code-boutique-mon-gerant', code)
     localStorage.setItem('nom-boutique-mon-gerant', nom)
-    localStorage.setItem('role-boutique-mon-gerant', 'gerant')
+    localStorage.setItem('role-boutique-mon-gerant', 'patron')
 
     // 2. On essaie Supabase en bonus, mais si ça échoue on s'en fiche
     try {
@@ -179,7 +180,7 @@ const creerBoutique = async () => {
     }
 
     alert(`Boutique créée ! Code : ${code} - Partage-le à ton équipe`)
-  }
+  }    
     const chargerProduitsDepuisSupabase = async (idBoutique: string) => {
     const { data, error } = await supabase
       .from('produits')
