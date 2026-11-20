@@ -307,7 +307,7 @@ useEffect(() => {
   // EN HAUT avec tes autres useState
   const [jours7, setJours7] = useState<{ label: string, dateStr: string, total: number }[]>([])
 
-  // AILLEURS, dans un useEffect
+    // AILLEURS, dans un useEffect
   useEffect(() => {
     const arr: { label: string, dateStr: string, total: number }[] = []
     for (let i = 6; i >= 0; i--) {
