@@ -170,7 +170,6 @@ useEffect(() => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase()
     const idLocal = 'local-' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6)
 
-    // 1. On sauvegarde EN LOCAL d'abord, ça marche toujours
     setBoutiqueId(idLocal)
     setCodeBoutique(code)
     setNomBoutique(nom)
@@ -180,24 +179,28 @@ useEffect(() => {
     localStorage.setItem('nom-boutique-mon-gerant', nom)
     localStorage.setItem('role-boutique-mon-gerant', 'patron')
 
-    // 2. On essaie Supabase en bonus, mais si ça échoue on s'en fiche
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('boutiques')
         .insert([{ nom, code }])
         .select()
         .single()
-      if (data) {
-        // Si Supabase a marché, on prend son vrai ID
+      
+      if (error) {
+        alert('ERREUR SUPABASE BOUTIQUE : ' + error.message)
+        console.log('Erreur complète :', error)
+      } else if (data) {
         setBoutiqueId(data.id)
         localStorage.setItem('boutique-id-mon-gerant', data.id)
+        alert('Maquis synchronisé Supabase ! ID : ' + data.id)
       }
-    } catch (e) {
+    } catch (e: any) {
+      alert('ERREUR CATCH : ' + e.message)
       console.log('Mode offline, boutique locale utilisée')
     }
 
     alert(`Boutique créée ! Code : ${code} - Partage-le à ton équipe`)
-  }    
+  }
     const chargerProduitsDepuisSupabase = async (idBoutique: string) => {
     const { data, error } = await supabase
       .from('produits')
