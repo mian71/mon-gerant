@@ -219,7 +219,7 @@ useEffect(() => {
     }
   }
 
-  const chargerVentesPatron = async () => {
+ const chargerVentesPatron = async () => {
     const boutiqueStockee = JSON.parse(localStorage.getItem('boutique') || 'null')
     const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
     if (!idBoutique) return
@@ -229,9 +229,12 @@ useEffect(() => {
       .select('*')
       .eq('boutique_id', idBoutique)
       .order('created_at', { ascending: false })
-      .limit(50)
+      .limit(500)
 
-    if (!error && data) setVentesPatron(data)
+    if (!error && data) {
+      setVentesPatron(data)
+      setVentesToutTemps(data) // <-- LA LIGNE QUI MANQUAIT
+    }
   }
 
   const rejoindreBoutique = async () => {
