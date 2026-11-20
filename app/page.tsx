@@ -313,7 +313,10 @@ useEffect(() => {
     for (let i = 6; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i)
       const dateStr = d.toISOString().split('T')[0]
-      const totalJ = (ventesToutTemps || []).filter(v => v && v.date && typeof v.date === 'string' && v.date.split('T')[0] === dateStr).reduce((s, v) => s + (v.total || 0), 0)
+      const totalJ = (ventesToutTemps || []).filter(v => {
+  const d = v?.date || v?.created_at
+  return v && typeof d === 'string' && d.split('T')[0] === dateStr
+}).reduce((s, v) => s + (v.total || (v.montant || 0) * (v.quantite || 1) || 0), 0)
       const label = i === 0 ? "Auj." : d.toLocaleDateString('fr-FR', { weekday: 'short' })
       arr.push({ label, dateStr, total: totalJ })
     }
@@ -761,18 +764,36 @@ useEffect(() => {
     const boutiqueStockee = JSON.parse(localStorage.getItem('boutique') || 'null')
     const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
 
-    const lignesVente = detailPrix.map(d => ({
-      boutique_id: idBoutique,
-      produit_nom: d.nom,
-      montant: d.prix,
-      quantite: d.qte,
-      mode_paiement: modePaiement,
-      vendeur: 'Gérant'
-    }))
+    // === ENVOIE À SUPABASE - table ventes ===
+let boutiqueStockee = null
+try {
+  const brut = localStorage.getItem('boutique')
+  if (brut) boutiqueStockee = JSON.parse(brut)
+} catch(e) { boutiqueStockee = null }
+const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
 
-    const { error: errVente } = await supabase
-      .from('ventes')
-      .insert(lignesVente)
+const dateVente = new Date().toISOString()
+
+const { error: errVente } = await supabase
+  .from('ventes')
+  .insert([{
+    boutique_id: idBoutique,
+    total: total,
+    date: dateVente,
+    items: detail,
+    benefice: benefice,
+    mode_paiement: modePaiement,
+    vendeur: 'Gérant',
+    produit_nom: detail, // pour compatibilité avec l'ancien affichage
+    montant: total,      // pour compatibilité
+    quantite: panier.length,
+  }])
+
+if (errVente) {
+  alert('ERREUR VENTE: ' + errVente.message)
+  console.log(errVente)
+  return
+}
 
     if (errVente) {
       alert('ERREUR VENTE: ' + errVente.message)
