@@ -220,20 +220,30 @@ useEffect(() => {
   }
 
  const chargerVentesPatron = async () => {
-    const boutiqueStockee = JSON.parse(localStorage.getItem('boutique') || 'null')
+    let boutiqueStockee = null
+    try {
+      const brut = localStorage.getItem('boutique')
+      if (brut) boutiqueStockee = JSON.parse(brut)
+    } catch (e) {
+      boutiqueStockee = null
+    }
     const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
     if (!idBoutique) return
 
-    const { data, error } = await supabase
-      .from('ventes')
-      .select('*')
-      .eq('boutique_id', idBoutique)
-      .order('created_at', { ascending: false })
-      .limit(500)
+    try {
+      const { data, error } = await supabase
+        .from('ventes')
+        .select('*')
+        .eq('boutique_id', idBoutique)
+        .order('created_at', { ascending: false })
+        .limit(500)
 
-    if (!error && data) {
-      setVentesPatron(data)
-      setVentesToutTemps(data) // <-- LA LIGNE QUI MANQUAIT
+      if (!error && data) {
+        setVentesPatron(data)
+        setVentesToutTemps(data)
+      }
+    } catch (e) {
+      console.log("Erreur chargement patron:", e)
     }
   }
 
