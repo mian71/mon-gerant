@@ -71,7 +71,24 @@ export default function Home() {
   const [codeBoutique, setCodeBoutique] = useState("")
   const [role, setRole] = useState("Patron")
   const [ventesLive, setVentesLive] = useState<any[]>([])
+// Charger les produits du maquis depuis Supabase
+useEffect(() => {
+  if (!boutiqueId) return
+  if (boutiqueId.startsWith('local-')) return // pas de synchro en mode local
 
+  const chargerProduits = async () => {
+    const { data } = await supabase.from('produits').select('*').eq('boutique_id', boutiqueId)
+    if (data) {
+      setProduits(data.map((p: any) => ({
+        ...p,
+        prix: p.prix_vente,
+        achat: p.prix_achat
+      })))
+    }
+  }
+  chargerProduits()
+}, [boutiqueId])
+  
   useEffect(() => {
     const v = localStorage.getItem("ventes-mon-gerant-v2")
     if (v) setVentes(JSON.parse(v))
