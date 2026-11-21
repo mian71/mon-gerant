@@ -68,7 +68,22 @@ export default function Home() {
   const [ventesPatron, setVentesPatron] = useState<any[]>([])
   const [afficherVentesDirect, setAfficherVentesDirect] = useState(false)
 
- 
+ const chargerVentesPatron = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('ventes')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) {
+      console.log('Erreur chargerVentesPatron:', error);
+      return;
+    }
+    setVentesPatron(data || []);
+  } catch (e) {
+    console.log('Erreur chargerVentesPatron:', e);
+  }
+};
  
   // --- BOUTIQUE TEMPS REEL / MULTI-BOUTIQUES ---
   const [boutiqueId, setBoutiqueId] = useState("")
@@ -973,7 +988,10 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
               <b>🔴 Ventes en direct - {ventesPatron.length} ventes</b>
               <div>
                 
-                <button onClick={() => setAfficherVentesDirect(!afficherVentesDirect)} style={{ padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #000', fontWeight: 'bold' }}>
+                <button onClick={() => {
+  if (!afficherVentesDirect) chargerVentesPatron();
+  setAfficherVentesDirect(!afficherVentesDirect);
+        }} style={{ padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #000', fontWeight: 'bold' }}>
                   {afficherVentesDirect ? '▲ Cacher' : '👁️ Voir'}
                 </button>
               </div>
