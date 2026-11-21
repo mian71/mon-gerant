@@ -219,33 +219,37 @@ useEffect(() => {
     }
   }
 
- const chargerVentesPatron = async () => {
-    let boutiqueStockee = null
-    try {
-      const brut = localStorage.getItem('boutique')
-      if (brut) boutiqueStockee = JSON.parse(brut)
-    } catch (e) {
-      boutiqueStockee = null
-    }
-    const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
-    if (!idBoutique) return
+const chargerVentes = async (idBoutique) => {
+  const { data, error } = await supabase
+    .from('ventes')
+    .select('*')
+    .eq('boutique_id', idBoutique)
+    .order('created_at', { ascending: false })
+    .limit(100)
 
-    try {
-      const { data, error } = await supabase
-        .from('ventes')
-        .select('*')
-        .eq('boutique_id', idBoutique)
-        .order('created_at', { ascending: false })
-        .limit(500)
+  if (error) { console.log(error); return }
 
-      if (!error && data) {
-        setVentesPatron(data)
-        setVentesToutTemps(data)
-      }
-    } catch (e) {
-      console.log("Erreur chargement patron:", e)
+  const ventesPropres = (data || []).map(v => {
+    let itemsTexte = ''
+    try {
+      if (!v.items) itemsTexte = v.produit_nom || 'Vente'
+      else if (typeof v.items === 'string') itemsTexte = v.items
+      else itemsTexte = JSON.stringify(v.items)
+    } catch(e) { itemsTexte = v.produit_nom || 'Vente' }
+
+    return {
+      ...v,
+      items: itemsTexte,
+      total: Number(v.total ?? v.montant ?? 0) || 0,
+      date: v.date || v.created_at || new Date().toISOString(),
+      benefice: Number(v.benefice ?? 0) || 0,
+      montant: Number(v.montant ?? v.total ?? 0) || 0,
     }
-  }
+  })
+
+  setVentes(ventesPropres)
+  setVentesToutTemps(ventesPropres)
+}
 
   const rejoindreBoutique = async () => {
     const codeSaisi = prompt('Entre le code du maquis ?')
@@ -305,39 +309,51 @@ useEffect(() => {
   const mixteOk = panier.length > 0 && sommeMixte === total && total > 0
 
   // EN HAUT avec tes autres useState
-  const [jours7, setJours7] = useState<{ label: string, dateStr: string, total: number }[]>([])
+const [jours7, setJours7] = useState<{ label: string, dateStr: string, total: number }[]>([])
 
-    // AILLEURS, dans un useEffect
-  useEffect(() => {
-    const arr: { label: string, dateStr: string, total: number }[] = []
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i)
-      const dateStr = d.toISOString().split('T')[0]
-      const totalJ = (ventesToutTemps || []).filter(v => {
-  const d = v?.date || v?.created_at
-  return v && typeof d === 'string' && d.split('T')[0] === dateStr
-}).reduce((s, v) => s + (v.total || (v.montant || 0) * (v.quantite || 1) || 0), 0)
-      const label = i === 0 ? "Auj." : d.toLocaleDateString('fr-FR', { weekday: 'short' })
-      arr.push({ label, dateStr, total: totalJ })
-    }
-    setJours7(arr)
-  }, [ventesToutTemps])
-  const maxJour = Math.max(...jours7.map(j => j.total), 1)
-  const total7Jours = jours7.reduce((s, j) => s + j.total, 0)
-  const moyenne7Jours = Math.round(total7Jours / 7)
-  const hier = jours7.length > 1 ? (jours7[jours7.length - 2]?.total ?? 0) : 0
-  const aujTotal = jours7.length > 0 ? (jours7[jours7.length - 1]?.total ?? 0) : 0
-  const evolution = hier > 0 ? Math.round(((aujTotal - hier) / hier) * 100) : aujTotal > 0 ? 100 : 0
+// AILLEURS, dans un useEffect
+useEffect(() => {
+  const arr: { label: string, dateStr: string, total: number }[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    const totalJ = (ventesToutTemps || []).filter(v => {
+      try {
+        if (!v) return false
+        const dateV = v?.date || v?.created_at
+        if (!dateV || typeof dateV !== 'string') return false
+        return dateV.split('T')[0] === dateStr
+      } catch(e) { return false }
+    }).reduce((s, v) => s + (Number(v?.total ?? v?.montant ?? 0) || 0), 0)
+    const label = i === 0 ? "Auj." : d.toLocaleDateString('fr-FR', { weekday: 'short' })
+    arr.push({ label, dateStr, total: totalJ })
+  }
+  setJours7(arr)
+}, [ventesToutTemps])
 
-  const joursDepuis = (dateStr: string) => Math.floor((new Date().getTime() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24))
-  const dettesAnciennes = dettes.filter(d => joursDepuis(d.date) >= 7)
-  const totalDettesAnciennes = dettesAnciennes.reduce((s, d) => s + d.total, 0)
+const maxJours = Math.max(...jours7.map(j => Number(j?.total ?? 0) || 0), 1)
+const total7Jours = jours7.reduce((s, j) => s + (Number(j?.total ?? 0) || 0), 0)
+const moyenne7Jours = Math.round(total7Jours / 7)
+const hier = jours7.length > 1 ? (Number(jours7[jours7.length - 2]?.total ?? 0) || 0) : 0
+const aujTotal = jours7.length > 0 ? (Number(jours7[jours7.length - 1]?.total ?? 0) || 0) : 0
+const evolution = hier > 0 ? Math.round(((aujTotal - hier) / hier) * 100) : aujTotal > 0 ? 100 : 0
 
-  const getPaiement = (v: Vente) => v.paiement || 'especes'
-  const totalEspeces = ventes.reduce((a, v) => a + (getPaiement(v) === 'especes' ? v.total : 0), 0)
-  const totalWave = ventes.reduce((a, v) => a + (getPaiement(v) === 'wave' ? v.total : 0), 0)
-  const totalOrange = ventes.reduce((a, v) => a + (getPaiement(v) === 'orange' ? v.total : 0), 0)
-  const labelPaiement = (p?: string) => p === 'wave' ? '🟦 Wave' : p === 'orange' ? '🟧 Orange Money' : p === 'credit' ? '📒 Crédit' : p === 'mixte' ? '💳 Mixte' : '💵 Espèces'
+const joursDepuis = (dateStr: string) => {
+  try {
+    if (!dateStr) return 0
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return 0
+    return Math.floor((new Date().getTime() - d.getTime()) / (1000 * 60 * 60 * 24))
+  } catch(e) { return 0 }
+}
+const dettesAnciennes = (dettes || []).filter(d => joursDepuis(d?.date) >= 7)
+const totalDettesAnciennes = dettesAnciennes.reduce((s, d) => s + (Number(d?.total ?? 0) || 0), 0)
+
+const getPaiement = (v: any) => v?.paiement || v?.mode_paiement || 'especes'
+const totalEspeces = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'especes' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : 0), 0)
+const totalWave = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'wave' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : 0), 0)
+const totalOrange = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'orange' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : 0), 0)
+const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange' ? '🟧 Orange Money' : p === 'credit' ? '📒 Crédit' : p === 'mixte' ? '🟪 Mixte' : '💵 Espèces'
 
   type ClienteStats = { nom: string, totalAchete: number, totalDu: number, nbAchats: number, nbDettes: number, dernierAchat: string }
   const clientesMap: Record<string, ClienteStats> = {}
