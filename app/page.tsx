@@ -138,12 +138,7 @@ useEffect(() => {
     }
   } catch(e) { console.log(e) }
 }
- useEffect(() => {
-  if (!boutiqueId) return
-  chargerVentesPatron()
-  const interval = setInterval(chargerVentesPatron, 30000)
-  return () => clearInterval(interval)
-}, [boutiqueId])
+ 
   
   useEffect(() => { if (!charge) localStorage.setItem("ventes-mon-gerant-v2", JSON.stringify(ventes)) }, [ventes, charge])
   useEffect(() => { if (!charge) localStorage.setItem("ventes-tout-temps-mon-gerant", JSON.stringify(ventesToutTemps)) }, [ventesToutTemps, charge])
