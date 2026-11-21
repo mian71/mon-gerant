@@ -760,40 +760,30 @@ useEffect(() => {
     const coutTotal = panier.reduce((s, p) => s + (p.achat || 0), 0)
     const benefice = total - coutTotal
 
-    // === ENVOIE À SUPABASE - table ventes ===
-    const boutiqueStockee = JSON.parse(localStorage.getItem('boutique') || 'null')
+    // === ENVOIE À SUPABASE - table ventes - VERSION CORRIGÉE ===
+    let boutiqueStockee = null
+    try {
+      const brut = localStorage.getItem('boutique')
+      if (brut) boutiqueStockee = JSON.parse(brut)
+    } catch(e) { boutiqueStockee = null }
     const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
 
-    // === ENVOIE À SUPABASE - table ventes ===
-let boutiqueStockee = null
-try {
-  const brut = localStorage.getItem('boutique')
-  if (brut) boutiqueStockee = JSON.parse(brut)
-} catch(e) { boutiqueStockee = null }
-const idBoutique = boutiqueStockee?.id || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
+    const dateVente = new Date().toISOString()
 
-const dateVente = new Date().toISOString()
-
-const { error: errVente } = await supabase
-  .from('ventes')
-  .insert([{
-    boutique_id: idBoutique,
-    total: total,
-    date: dateVente,
-    items: detail,
-    benefice: benefice,
-    mode_paiement: modePaiement,
-    vendeur: 'Gérant',
-    produit_nom: detail, // pour compatibilité avec l'ancien affichage
-    montant: total,      // pour compatibilité
-    quantite: panier.length,
-  }])
-
-if (errVente) {
-  alert('ERREUR VENTE: ' + errVente.message)
-  console.log(errVente)
-  return
-}
+    const { error: errVente } = await supabase
+      .from('ventes')
+      .insert([{
+        boutique_id: idBoutique,
+        total: total,
+        date: dateVente,
+        items: detail,
+        benefice: benefice,
+        mode_paiement: modePaiement,
+        vendeur: 'Gérant',
+        produit_nom: detail,
+        montant: total,
+        quantite: panier.length,
+      }])
 
     if (errVente) {
       alert('ERREUR VENTE: ' + errVente.message)
