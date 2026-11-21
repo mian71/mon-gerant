@@ -981,9 +981,13 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
 
             {afficherVentesDirect && (
               <div style={{ marginTop: 8, maxHeight: 250, overflowY: 'auto' }}>
-                {ventesPatron.length === 0 ? <div>Aucune vente pour l'instant</div> : {ventesPatron.map((v: any) => (
-  <div key={v.id} style={{ borderBottom: '1px solid #c3e6cb', padding: '4px 0' }}>• {v.quantite}x {v.produit_nom} — {(Number(v?.montant ?? 0) || 0) * (Number(v?.quantite ?? 1) || 1)} F — {v.vendeur} — {v.mode_paiement}</div>
-))}
+                {ventesPatron.length === 0 ? (
+  <div>Aucune vente pour l'instant</div>
+) : (
+  ventesPatron.map((v: any) => (
+    <div key={v.id} style={{ borderBottom: '1px solid #c3e6cb', padding: '4px 0' }}>• {v.quantite}x {v.produit_nom} — {(Number(v?.montant ?? 0) || 0) * (Number(v?.quantite ?? 1) || 1)} F — {v.vendeur} — {v.mode_paiement}</div>
+  ))
+)}
               </div>
             )}
           </div>
