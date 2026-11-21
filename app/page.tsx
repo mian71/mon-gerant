@@ -116,11 +116,35 @@ useEffect(() => {
     if (rl) setRole(rl)
     setCharge(false)
   }, [])
-  useEffect(() => {
-    chargerVentesPatron()
-    const interval = setInterval(chargerVentesPatron, 5000)
-    return () => clearInterval(interval)
-  }, [])
+
+  const chargerVentesPatron = async () => {
+  const id = localStorage.getItem('boutique-id-mon-gerant')
+  if (!id || id.startsWith('local-')) return
+  try {
+    const { data } = await supabase
+      .from('ventes')
+      .select('*')
+      .eq('boutique_id', id)
+      .order('created_at', { ascending: false })
+      .limit(50)
+    if (data) {
+      setVentesPatron(data.map((v: any) => ({
+        ...v,
+        montant: Number(v.montant ?? v.total ?? 0) || 0,
+        quantite: Number(v.quantite ?? 1) || 1,
+        produit_nom: v.produit_nom || v.items || 'Vente',
+        mode_paiement: v.mode_paiement || v.paiement || 'especes',
+      })))
+    }
+  } catch(e) { console.log(e) }
+}
+ useEffect(() => {
+  if (!boutiqueId) return
+  chargerVentesPatron()
+  const interval = setInterval(chargerVentesPatron, 30000)
+  return () => clearInterval(interval)
+}, [boutiqueId])
+  
   useEffect(() => { if (!charge) localStorage.setItem("ventes-mon-gerant-v2", JSON.stringify(ventes)) }, [ventes, charge])
   useEffect(() => { if (!charge) localStorage.setItem("ventes-tout-temps-mon-gerant", JSON.stringify(ventesToutTemps)) }, [ventesToutTemps, charge])
   useEffect(() => { if (!charge) localStorage.setItem("produits-mon-gerant-v2", JSON.stringify(produits)) }, [produits, charge])
@@ -955,7 +979,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
           <div style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', marginTop: 8, textAlign: 'center' }}>
             <div style={{ fontSize: 12, color: '#666' }}>💰 TOTAL DIRECT AUJOURD'HUI (Patron)</div>
             <div style={{ fontSize: 22, fontWeight: 'bold', color: '#16a34a' }}>
-              {ventesPatron.reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F
+             {ventesPatron.reduce((s: number, v: any) => s + ((Number(v?.montant ?? 0) || 0) * (Number(v?.quantite ?? 1) || 1)), 0).toLocaleString()} F
             </div>
             <div style={{ fontSize: 13 }}>🧾 {ventesPatron.length} ventes en direct</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>
@@ -978,9 +1002,9 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
 
             {afficherVentesDirect && (
               <div style={{ marginTop: 8, maxHeight: 250, overflowY: 'auto' }}>
-                {ventesPatron.length === 0 ? <div>Aucune vente pour l'instant</div> : ventesPatron.map((v: any) => (
-                  <div key={v.id} style={{ borderBottom: '1px solid #c3e6cb', padding: '4px 0' }}>• {v.quantite}x {v.produit_nom} — {v.montant * v.quantite} F — {v.vendeur} — {v.mode_paiement}</div>
-                ))}
+                {ventesPatron.length === 0 ? <div>Aucune vente pour l'instant</div> : {ventesPatron.map((v: any) => (
+  <div key={v.id} style={{ borderBottom: '1px solid #c3e6cb', padding: '4px 0' }}>• {v.quantite}x {v.produit_nom} — {(Number(v?.montant ?? 0) || 0) * (Number(v?.quantite ?? 1) || 1)} F — {v.vendeur} — {v.mode_paiement}</div>
+))}
               </div>
             )}
           </div>
@@ -1018,7 +1042,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
                 {jours7.map((j, i) => (
                   <div key={i} style={{ flex: 1, textAlign: 'center' }}>
                     <div style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 4 }}>{j.total > 0 ? `${Math.round(j.total / 1000)}k` : '0'}</div>
-                    <div style={{ height: `${Math.max(5, (j.total / maxJour) * 90)}px`, background: i === jours7.length - 1 ? '#16a34a' : '#a78bfa', borderRadius: '6px 6px 0 0' }}></div>
+                    <div style={{ height: `${Math.max(5, (j.total / maxJours) * 90)}px`, background: i === jours7.length - 1 ? '#16a34a' : '#a78bfa', borderRadius: '6px 6px 0 0' }}></div>
                     <div style={{ fontSize: 11, marginTop: 4, fontWeight: i === jours7.length - 1 ? 'bold' : 'normal' }}>{j.label}</div>
                   </div>
                 ))}
