@@ -66,12 +66,36 @@ export default function Home() {
   const [ventesPatron, setVentesPatron] = useState<any[]>([])
   const [afficherVentesDirect, setAfficherVentesDirect] = useState(false)
 
+  const chargerVentesPatron = async () => {
+  const id = localStorage.getItem('boutique-id-mon-gerant')
+  if (!id || id.startsWith('local-')) return
+  try {
+    const { data } = await supabase
+      .from('ventes')
+      .select('*')
+      .eq('boutique_id', id)
+      .order('created_at', { ascending: false })
+      .limit(50)
+    if (data) {
+      setVentesPatron(data.map((v: any) => ({
+        ...v,
+        montant: Number(v.montant ?? v.total ?? 0) || 0,
+        quantite: Number(v.quantite ?? 1) || 1,
+        produit_nom: v.produit_nom || v.items || 'Vente',
+        mode_paiement: v.mode_paiement || v.paiement || 'especes',
+      })))
+    }
+  } catch(e) { console.log(e) }
+}
+ 
   // --- BOUTIQUE TEMPS REEL / MULTI-BOUTIQUES ---
   const [boutiqueId, setBoutiqueId] = useState("")
   const [codeBoutique, setCodeBoutique] = useState("")
   const [role, setRole] = useState("Patron")
   const [ventesLive, setVentesLive] = useState<any[]>([])
-// Charger les produits du maquis depuis Supabase
+ 
+  
+  // Charger les produits du maquis depuis Supabase
 useEffect(() => {
   if (!boutiqueId) return
   if (boutiqueId.startsWith('local-')) return // pas de synchro en mode local
@@ -117,29 +141,7 @@ useEffect(() => {
     setCharge(false)
   }, [])
 
-  const chargerVentesPatron = async () => {
-  const id = localStorage.getItem('boutique-id-mon-gerant')
-  if (!id || id.startsWith('local-')) return
-  try {
-    const { data } = await supabase
-      .from('ventes')
-      .select('*')
-      .eq('boutique_id', id)
-      .order('created_at', { ascending: false })
-      .limit(50)
-    if (data) {
-      setVentesPatron(data.map((v: any) => ({
-        ...v,
-        montant: Number(v.montant ?? v.total ?? 0) || 0,
-        quantite: Number(v.quantite ?? 1) || 1,
-        produit_nom: v.produit_nom || v.items || 'Vente',
-        mode_paiement: v.mode_paiement || v.paiement || 'especes',
-      })))
-    }
-  } catch(e) { console.log(e) }
-}
- 
-  
+   
   useEffect(() => { if (!charge) localStorage.setItem("ventes-mon-gerant-v2", JSON.stringify(ventes)) }, [ventes, charge])
   useEffect(() => { if (!charge) localStorage.setItem("ventes-tout-temps-mon-gerant", JSON.stringify(ventesToutTemps)) }, [ventesToutTemps, charge])
   useEffect(() => { if (!charge) localStorage.setItem("produits-mon-gerant-v2", JSON.stringify(produits)) }, [produits, charge])
