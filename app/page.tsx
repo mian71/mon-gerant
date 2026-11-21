@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from '@/lib/supabase'
 
+
 type Produit = { nom: string, prix: number, stock: number, achat?: number }
 type Vente = { items: string, total: number, date?: string, benefice?: number, detail?: { nom: string, qte: number, prix: number }[], paiement?: string, remise?: number }
 type Dette = { client: string, items: string, total: number, date: string, benefice: number, panierDetail: Produit[], totalOrigine?: number, dejaPaye?: number }
@@ -67,27 +68,7 @@ export default function Home() {
   const [ventesPatron, setVentesPatron] = useState<any[]>([])
   const [afficherVentesDirect, setAfficherVentesDirect] = useState(false)
 
-  const chargerVentesPatron = async () => {
-  const id = localStorage.getItem('boutique-id-mon-gerant')
-  if (!id || id.startsWith('local-')) return
-  try {
-    const { data } = await supabase
-      .from('ventes')
-      .select('*')
-      .eq('boutique_id', id)
-      .order('created_at', { ascending: false })
-      .limit(50)
-    if (data) {
-      setVentesPatron(data.map((v: any) => ({
-        ...v,
-        montant: Number(v.montant ?? v.total ?? 0) || 0,
-        quantite: Number(v.quantite ?? 1) || 1,
-        produit_nom: v.produit_nom || v.items || 'Vente',
-        mode_paiement: v.mode_paiement || v.paiement || 'especes',
-      })))
-    }
-  } catch(e) { console.log(e) }
-}
+ 
  
   // --- BOUTIQUE TEMPS REEL / MULTI-BOUTIQUES ---
   const [boutiqueId, setBoutiqueId] = useState("")
@@ -991,7 +972,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <b>🔴 Ventes en direct - {ventesPatron.length} ventes</b>
               <div>
-                <button onClick={chargerVentesPatron} style={{ padding: '4px 8px', borderRadius: 6, marginRight: 4 }}>🔄</button>
+                
                 <button onClick={() => setAfficherVentesDirect(!afficherVentesDirect)} style={{ padding: '4px 10px', borderRadius: 6, background: '#fff', border: '1px solid #000', fontWeight: 'bold' }}>
                   {afficherVentesDirect ? '▲ Cacher' : '👁️ Voir'}
                 </button>
