@@ -973,13 +973,13 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
           <div style={{ background: '#fff', borderRadius: 8, padding: '8px 10px', marginTop: 8, textAlign: 'center' }}>
             <div style={{ fontSize: 12, color: '#666' }}>💰 TOTAL DIRECT AUJOURD'HUI (Patron)</div>
             <div style={{ fontSize: 22, fontWeight: 'bold', color: '#16a34a' }}>
-             {ventesPatron.reduce((s: number, v: any) => s + ((Number(v?.montant ?? 0) || 0) * (Number(v?.quantite ?? 1) || 1)), 0).toLocaleString()} F
+             {ventesPatron.reduce((s: number, v: any) => s + (Number(v?.montant ?? 0) || 0), 0).toLocaleString()} F
             </div>
             <div style={{ fontSize: 13 }}>🧾 {ventesPatron.length} ventes en direct</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>
-              💵 Espèces : {ventesPatron.filter((v: any) => ['especes','espèces','Espèces','Espèces'].includes(v.mode_paiement)).reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F •
-              🟦 Wave : {ventesPatron.filter((v: any) => v.mode_paiement === 'Wave' || v.mode_paiement === 'wave').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F •
-              🟧 Orange : {ventesPatron.filter((v: any) => v.mode_paiement === 'Orange Money' || v.mode_paiement === 'Orange' || v.mode_paiement === 'orange').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F
+              💵 Espèces : {ventesPatron.filter((v: any) => ['especes','espèces','Espèces'].includes(v.mode_paiement)).reduce((s: number, v: any) => s + Number(v.montant ?? 0), 0).toLocaleString()} F •
+              🟦 Wave : {ventesPatron.filter((v: any) => v.mode_paiement === 'Wave' || v.mode_paiement === 'wave').reduce((s: number, v: any) => s + Number(v.montant ?? 0), 0).toLocaleString()} F •
+              🟧 Orange : {ventesPatron.filter((v: any) => v.mode_paiement === 'Orange Money' || v.mode_paiement === 'Orange' || v.mode_paiement === 'orange').reduce((s: number, v: any) => s + Number(v.montant ?? 0), 0).toLocaleString()} F
             </div>
           </div>
 
@@ -1003,7 +1003,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
   <div>Aucune vente pour l'instant</div>
 ) : (
   ventesPatron.map((v: any) => (
-    <div key={v.id} style={{ borderBottom: '1px solid #c3e6cb', padding: '4px 0' }}>• {v.quantite}x {v.produit_nom} — {(Number(v?.montant ?? 0) || 0) * (Number(v?.quantite ?? 1) || 1)} F — {v.vendeur} — {v.mode_paiement}</div>
+    <div key={v.id} style={{ borderBottom: '1px solid #c3e6cb', padding: '4px 0' }}>• {v.produit_nom} — {(Number(v?.montant ?? 0) || 0)} F — {v.vendeur} — {v.mode_paiement}</div>
   ))
 )}
               </div>
