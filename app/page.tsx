@@ -977,9 +977,9 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             </div>
             <div style={{ fontSize: 13 }}>🧾 {ventesPatron.length} ventes en direct</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>
-              💵 Espèces : {ventesPatron.filter((v: any) => v.mode_paiement === 'Espèces' || v.mode_paiement === 'especes').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F •
-              🟦 Wave : {ventesPatron.filter((v: any) => v.mode_paiement === 'Wave').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F •
-              🟧 Orange : {ventesPatron.filter((v: any) => v.mode_paiement === 'Orange Money' || v.mode_paiement === 'Orange').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F
+              💵 Espèces : {ventesPatron.filter((v: any) => ['especes','espèces','Espèces','Espèces'].includes(v.mode_paiement)).reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F •
+              🟦 Wave : {ventesPatron.filter((v: any) => v.mode_paiement === 'Wave' || v.mode_paiement === 'wave').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F •
+              🟧 Orange : {ventesPatron.filter((v: any) => v.mode_paiement === 'Orange Money' || v.mode_paiement === 'Orange' || v.mode_paiement === 'orange').reduce((s: number, v: any) => s + (v.montant * v.quantite), 0).toLocaleString()} F
             </div>
           </div>
 
