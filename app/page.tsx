@@ -68,11 +68,14 @@ export default function Home() {
   const [ventesPatron, setVentesPatron] = useState<any[]>([])
   const [afficherVentesDirect, setAfficherVentesDirect] = useState(false)
 
- const chargerVentesPatron = async () => {
+  const chargerVentesPatron = async () => {
   try {
+    const debutJour = new Date()
+    debutJour.setHours(0, 0, 0, 0)
     const { data, error } = await supabase
       .from('ventes')
       .select('*')
+      .gte('created_at', debutJour.toISOString())
       .order('created_at', { ascending: false })
       .limit(100);
     if (error) {
@@ -538,26 +541,26 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
   const nouvelleJournee = async () => {
     if (!confirm(`Nouvelle journée ?\n\n✅ Le TOP va rester (depuis le début).\n🗑️ Seules les ventes d'aujourd'hui vont être effacées.\n\nTu confirmes ?`)) return
 
-    // 1. On vide l'écran tout de suite
     setVentes([]); setDepenses([]); setDerniereVente(null)
     setVentesPatron([])
 
-    // 2. On efface aussi les ventes directes dans Supabase (celles d'aujourd'hui)
     try {
       const debutJour = new Date()
       debutJour.setHours(0, 0, 0, 0)
-      const { error } = await supabase
+      const { error, count } = await supabase
         .from('ventes')
         .delete()
         .gte('created_at', debutJour.toISOString())
-      if (error) console.log('Erreur effacement ventes directes:', error)
+        .select()
+      console.log('Delete ventes directes:', { error, count })
+      if (error) alert('Erreur suppression Supabase: ' + error.message)
     } catch (e) {
       console.log('Erreur nouvelle journée:', e)
     }
 
     alert("✅ Nouvelle journée ! Le TOP est gardé.")
   }
-
+ 
   const creerSauvegarde = () => {
     const data = { produits, ventes, ventesToutTemps, dettes, depenses, commandes, achats, nomBoutique, objectif, date: new Date().toISOString() }
     const code = btoa(unescape(encodeURIComponent(JSON.stringify(data))))
