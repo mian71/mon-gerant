@@ -535,9 +535,26 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`, '_blank')
   }
 
-  const nouvelleJournee = () => {
+  const nouvelleJournee = async () => {
     if (!confirm(`Nouvelle journée ?\n\n✅ Le TOP va rester (depuis le début).\n🗑️ Seules les ventes d'aujourd'hui vont être effacées.\n\nTu confirmes ?`)) return
+
+    // 1. On vide l'écran tout de suite
     setVentes([]); setDepenses([]); setDerniereVente(null)
+    setVentesPatron([])
+
+    // 2. On efface aussi les ventes directes dans Supabase (celles d'aujourd'hui)
+    try {
+      const debutJour = new Date()
+      debutJour.setHours(0, 0, 0, 0)
+      const { error } = await supabase
+        .from('ventes')
+        .delete()
+        .gte('created_at', debutJour.toISOString())
+      if (error) console.log('Erreur effacement ventes directes:', error)
+    } catch (e) {
+      console.log('Erreur nouvelle journée:', e)
+    }
+
     alert("✅ Nouvelle journée ! Le TOP est gardé.")
   }
 
