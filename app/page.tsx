@@ -1016,7 +1016,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
 
       <div>
         <h1>Mon Gérant</h1>
-        <button onClick={pousserProduitsVersSupabase} className="bg-blue-500 text-white px-3 py-1 rounded">Pousser produits vers Supabase</button>
+        
         <div style={{ background: '#f0f9ff', padding: 12, borderRadius: 10, marginBottom: 15, border: '1px solid #bae6fd' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 14 }}>🏪 Mon Maquis : <strong>{nomAffiche}</strong></span>
