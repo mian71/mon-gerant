@@ -759,26 +759,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     alert(`✅ Paiement Mixte encaissé : ${resume} = ${total} F`)
   }
 
-  const pousserProduitsVersSupabase = async () => {
-    const idBoutique = (typeof boutique !== 'undefined' && boutique?.id) || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
-    if (!idBoutique) { alert('Pas de boutique_id'); return }
-
-    for (const p of produits) {
-      const { error } = await supabase
-        .from('produits')
-        .upsert([{
-          boutique_id: idBoutique,
-          nom: p.nom,
-          prix_vente: p.prix,
-          prix_achat: p.achat || 0,
-          stock: p.stock
-        }], { onConflict: 'boutique_id,nom' })
-      if (error) console.log('Erreur produit', p.nom, error)
-    }
-    alert(`✅ ${produits.length} produits poussés vers Supabase !`)
-  }
-
-
+  
   const encaisser = async () => {
     if (panier.length === 0) return
     if (modePaiement === 'mixte') { encaisserMixte(); return }
