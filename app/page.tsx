@@ -67,7 +67,15 @@ export default function Home() {
   const [stockInventaire, setStockInventaire] = useState<Record<number, string>>({})
   const [ventesPatron, setVentesPatron] = useState<any[]>([])
   const [afficherVentesDirect, setAfficherVentesDirect] = useState(false)
-
+  const [utilisateur, setUtilisateur] = useState(null);
+  const [nomLogin, setNomLogin] = useState('');
+  const [mdpLogin, setMdpLogin] = useState('');
+  const [caisseOuverte, setCaisseOuverte] = useState(null); // { nom: 'matin', debut: Date }
+  const [comptes, setComptes] = useState([
+  { user: 'matin', mdp: '1234', nomAffiche: 'Gérant Matin' },
+  { user: 'nuit', mdp: '1234', nomAffiche: 'Gérant Nuit' },
+]);
+  
   const chargerVentesPatron = async () => {
   try {
     const debutJour = new Date()
@@ -962,8 +970,35 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
   const panierGroupe: Record<string, { nom: string, prix: number, qte: number }> = {}
   panier.forEach(p => { if (!panierGroupe[p.nom]) panierGroupe[p.nom] = { nom: p.nom, prix: p.prix, qte: 0 }; panierGroupe[p.nom].qte++ })
 
+  const seConnecter = () => {
+  const trouve = comptes.find(c => c.user === nomLogin && c.mdp === mdpLogin);
+  if (!trouve) { alert('Nom ou mot de passe faux'); return; }
+  setUtilisateur(trouve);
+  setNomLogin(''); setMdpLogin('');
+};
+
+  if (!utilisateur) {
   return (
+    <div style={{ padding: 20, maxWidth: 400, margin: '40px auto', textAlign: 'center' }}>
+      <h2>🔐 Connexion Gérant</h2>
+      <input value={nomLogin} onChange={e => setNomLogin(e.target.value)} placeholder="Nom d'utilisateur... ex: matin" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
+      <input type="password" value={mdpLogin} onChange={e => setMdpLogin(e.target.value)} placeholder="Mot de passe" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
+      <button onClick={seConnecter} style={{ width: '100%', padding: 12, background: '#0891b2', color: 'white', border: 'none', borderRadius: 8, fontWeight: 'bold' }}>Entrer</button>
+      <p style={{ fontSize: 12, color: '#666', marginTop: 10 }}>Test : matin / 1234 ou nuit / 1234</p>
+    </div>
+  );
+}
+  return ( 
     <div style={{ padding: 20, fontFamily: 'sans-serif', maxWidth: 500, margin: '0 auto' }}>
+      <div style={{ background: '#fff7ed', padding: 10, borderRadius: 8, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <span>👤 Connecté : <b>{utilisateur.nomAffiche}</b> {caisseOuverte ? `• 🟢 Caisse ouverte` : '• 🔴 Caisse fermée'}</span>
+  {caisseOuverte ? (
+    <button onClick={() => { alert(`Clôture de ${utilisateur.nomAffiche} : ${ventes.reduce((s,v)=>s+v.total,0)} F`); setCaisseOuverte(null); setUtilisateur(null); }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🔴 Clôturer & Descendre</button>
+  ) : (
+    <button onClick={() => setCaisseOuverte({ nom: utilisateur.nomAffiche, debut: new Date() })} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🟢 Ouvrir ma caisse & Monter</button>
+  )}
+  <button onClick={() => setUtilisateur(null)} style={{ background: '#e5e7eb', border: 'none', borderRadius: 8, padding: '6px 10px' }}>Quitter</button>
+</div>
       {/* --- BOUTIQUE TEMPS RÉEL --- */}
       {!boutiqueId ? (
         <div style={{ background: '#fff3cd', padding: 12, borderRadius: 10, marginBottom: 12, textAlign: 'center' }}>
