@@ -371,9 +371,9 @@ const dettesAnciennes = (dettes || []).filter(d => joursDepuis(d?.date) >= 7)
 const totalDettesAnciennes = dettesAnciennes.reduce((s, d) => s + (Number(d?.total ?? 0) || 0), 0)
 
 const getPaiement = (v: any) => v?.paiement || v?.mode_paiement || 'especes'
-const totalEspeces = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'especes' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : 0), 0)
-const totalWave = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'wave' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : 0), 0)
-const totalOrange = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'orange' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : 0), 0)
+const totalEspeces = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'especes' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : getPaiement(v) === 'mixte' ? (Number(v?.mixte_especes ?? 0) || 0) : 0), 0)
+const totalWave = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'wave' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : getPaiement(v) === 'mixte' ? (Number(v?.mixte_wave ?? 0) || 0) : 0), 0)
+const totalOrange = (ventes || []).reduce((a, v) => a + (getPaiement(v) === 'orange' ? (Number(v?.total ?? v?.montant ?? 0) || 0) : getPaiement(v) === 'mixte' ? (Number(v?.mixte_orange ?? 0) || 0) : 0), 0)
 const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange' ? '🟧 Orange Money' : p === 'credit' ? '📒 Crédit' : p === 'mixte' ? '🟪 Mixte' : '💵 Espèces'
 
   type ClienteStats = { nom: string, totalAchete: number, totalDu: number, nbAchats: number, nbDettes: number, dernierAchat: string }
