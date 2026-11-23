@@ -750,13 +750,19 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     // === ENVOIE À SUPABASE - 1 SEULE LIGNE ===
     const idBoutique = (typeof boutique !== 'undefined' && boutique?.id) || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
 
-    const { error: errVente } = await supabase
-      .from('ventes_live')
+        const { error: errVente } = await supabase
+      .from('ventes')
       .insert([{
         boutique_id: idBoutique,
+        total: total,
+        date: new Date().toISOString(),
+        items: detail,
+        benefice: beneficeTotal,
+        mode_paiement: 'mixte',
+        vendeur: 'Gérant',
         produit_nom: detail + ' (Mixte)',
         montant: total,
-        vendeur: 'Gérant'
+        quantite: panier.length,
       }])
 
     if (errVente) {
