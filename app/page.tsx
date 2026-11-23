@@ -1359,22 +1359,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             </div>
           )}
         </div>
-
-        <div style={{ background: '#f5f3ff', padding: 15, borderRadius: 10, marginBottom: 20, border: '2px solid #a78bfa' }}>
-          <h3 style={{ marginTop: 0 }}>💾 Sauvegarde - Ne jamais tout perdre</h3>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={envoyerSauvegardeWhatsApp} style={{ flex: 1, padding: 12, background: '#7c3aed', color: 'white', border: 'none', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer' }}>💾 Sauvegarder sur WhatsApp</button>
-            <button onClick={copierSauvegarde} style={{ flex: 1, padding: 12, background: '#e5e7eb', border: 'none', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer' }}>📋 Copier le code</button>
-          </div>
-          <button onClick={() => setAfficherSauvegarde(!afficherSauvegarde)} style={{ width: '100%', padding: 10, background: 'white', border: '1px solid #a78bfa', borderRadius: 8, marginTop: 8, cursor: 'pointer', fontWeight: 'bold' }}>{afficherSauvegarde ? '🔼 Cacher restauration' : '♻️ Restaurer une sauvegarde'}</button>
-          {afficherSauvegarde && (
-            <div style={{ marginTop: 10 }}>
-              <textarea value={codeSauvegarde} onChange={e => setCodeSauvegarde(e.target.value)} placeholder="Colle ton code ici..." rows={3} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #ccc', marginTop: 5 }} />
-              <button onClick={restaurerSauvegarde} style={{ width: '100%', padding: 12, background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, fontWeight: 'bold', marginTop: 8, cursor: 'pointer' }}>♻️ Restaurer maintenant</button>
-            </div>
-          )}
-        </div>
-
+        
         {dettes.length > 0 && (
           <div style={{ background: '#fff1f2', padding: 15, borderRadius: 10, marginBottom: 20, border: '2px solid #fda4af' }}>
             <h3 style={{ marginTop: 0 }}>📒 Dettes - On te doit de l'argent</h3>
@@ -1633,7 +1618,24 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             </div>
           )
         }
-      </div >
+      
+      {/* 💾 Sauvegarde - petit, tout en bas */}
+<div style={{ background: '#f5f3ff', padding: 10, borderRadius: 8, marginTop: 10, border: '1px solid #ddd' }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <span style={{ fontSize: 12, color: '#666' }}>💾 Sauvegarde - Ne jamais tout perdre</span>
+    <button onClick={() => setAfficherSauvegarde(!afficherSauvegarde)} style={{ padding: '4px 10px', background: 'white', border: '1px solid #a78bfa', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 'bold' }}>{afficherSauvegarde ? 'Fermer' : 'Voir'}</button>
+  </div>
+  {afficherSauvegarde && (
+    <div style={{ marginTop: 8 }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <button onClick={envoyerSauvegardeWhatsApp} style={{ flex: 1, padding: 8, background: '#7c3aed', color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 'bold', cursor: 'pointer' }}>💾 Sauvegarder sur WhatsApp</button>
+        <button onClick={copierSauvegarde} style={{ flex: 1, padding: 8, background: '#e5e7eb', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 'bold', cursor: 'pointer' }}>📋 Copier le code</button>
+      </div>
+      <textarea value={codeSauvegarde} onChange={e => setCodeSauvegarde(e.target.value)} placeholder="Colle ton code ici..." rows={2} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginTop: 6, fontSize: 12 }} />
+      <button onClick={restaurerSauvegarde} style={{ width: '100%', padding: 8, background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 'bold', marginTop: 6, cursor: 'pointer' }}>♻️ Restaurer maintenant</button>
+    </div>
+  )}
+</div>
     </div >
   )
 }
