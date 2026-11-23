@@ -1645,7 +1645,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
               <p style={{ fontSize: 13, color: '#666' }}>Ça c'est juste aujourd'hui. Le TOP en haut compte depuis le début.</p>
               {ventes.map((v, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '8px 10px', borderRadius: 8, marginBottom: 5 }}>
-                  <span>Vente #{i + 1} : {v.items} = {v.total} F • {labelPaiement(v.paiement)}{(v.remise || 0) > 0 ? ` • 🏷️ −${v.remise} F` : ''} {v.date ? `• ${new Date(v.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''}</span>
+                  <span>Vente #{i + 1} : {v.items} = {v.total} F • {labelPaiement(v.paiement)}{(v.remise || 0) > 0 ? ` • 🏷️ −${v.remise} F` : ''} {v.date ? `• ${new Date(v.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''} • 👤 {v.vendeur || 'Inconnu'}</span>
                   <button onClick={() => envoyerRecu(v)} style={{ background: '#25D366', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 'bold' }}>🧾 Reçu</button>
                 </div>
               ))}
