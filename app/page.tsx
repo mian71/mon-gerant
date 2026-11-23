@@ -750,7 +750,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     // === ENVOIE À SUPABASE - 1 SEULE LIGNE ===
     const idBoutique = (typeof boutique !== 'undefined' && boutique?.id) || localStorage.getItem('boutique-id-mon-gerant') || localStorage.getItem('boutique-id')
 
-        const { error: errVente } = await supabase
+       const { error: errVente } = await supabase
       .from('ventes')
       .insert([{
         boutique_id: idBoutique,
@@ -763,6 +763,9 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
         produit_nom: detail + ' (Mixte)',
         montant: total,
         quantite: panier.length,
+        mixte_especes: Number(mixteEspeces) || 0,
+        mixte_wave: Number(mixteWave) || 0,
+        mixte_orange: Number(mixteOrange) || 0,
       }])
 
     if (errVente) {
@@ -984,9 +987,9 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             </div>
             <div style={{ fontSize: 13 }}>🧾 {ventesPatron.length} ventes en direct</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>
-              💵 Espèces : {ventesPatron.filter((v: any) => ['especes','espèces','Espèces'].includes(v.mode_paiement)).reduce((s: number, v: any) => s + Number(v.montant ?? 0), 0).toLocaleString()} F •
-              🟦 Wave : {ventesPatron.filter((v: any) => v.mode_paiement === 'Wave' || v.mode_paiement === 'wave').reduce((s: number, v: any) => s + Number(v.montant ?? 0), 0).toLocaleString()} F •
-              🟧 Orange : {ventesPatron.filter((v: any) => v.mode_paiement === 'Orange Money' || v.mode_paiement === 'Orange' || v.mode_paiement === 'orange').reduce((s: number, v: any) => s + Number(v.montant ?? 0), 0).toLocaleString()} F
+              💵 Espèces : {ventesPatron.reduce((s: number, v: any) => s + (['especes','espèces','Espèces'].includes(v.mode_paiement) ? Number(v.montant ?? 0) : v.mode_paiement === 'mixte' ? Number(v.mixte_especes ?? 0) : 0), 0).toLocaleString()} F •
+              🟦 Wave : {ventesPatron.reduce((s: number, v: any) => s + ((v.mode_paiement === 'Wave' || v.mode_paiement === 'wave') ? Number(v.montant ?? 0) : v.mode_paiement === 'mixte' ? Number(v.mixte_wave ?? 0) : 0), 0).toLocaleString()} F •
+              🟧 Orange : {ventesPatron.reduce((s: number, v: any) => s + ((v.mode_paiement === 'Orange Money' || v.mode_paiement === 'Orange' || v.mode_paiement === 'orange') ? Number(v.montant ?? 0) : v.mode_paiement === 'mixte' ? Number(v.mixte_orange ?? 0) : 0), 0).toLocaleString()} F
             </div>
           </div>
 
