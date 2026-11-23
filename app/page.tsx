@@ -783,7 +783,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     }
 
     const resumeMixte = parts.map(p => `${labelPaiement(p.paiement)} ${p.montant} F`).join(' + ')
-    const nouvelleVente: any = { items: `${detail} (Mixte)`, total: total, date: new Date().toISOString(), benefice: beneficeTotal, detail: detailPrix, paiement: 'mixte', remise: montantRemiseClamp, mixte_especes: Number(mixteEspeces) || 0, mixte_wave: Number(mixteWave) || 0, mixte_orange: Number(mixteOrange) || 0, resumeMixte: resumeMixte }
+    const nouvelleVente: any = {vendeur: utilisateur ? utilisateur.nomAffiche : 'Inconnu',items: `${detail} (Mixte)`, total: total, date: new Date().toISOString(), benefice: beneficeTotal, detail: detailPrix, paiement: 'mixte', remise: montantRemiseClamp, mixte_especes: Number(mixteEspeces) || 0, mixte_wave: Number(mixteWave) || 0, mixte_orange: Number(mixteOrange) || 0, resumeMixte: resumeMixte }
     const nouvellesVentes: Vente[] = [nouvelleVente]
     setVentes([...ventes, ...nouvellesVentes])
     setVentesToutTemps([...ventesToutTemps, ...nouvellesVentes])
@@ -852,7 +852,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
       alert(`📒 Crédit enregistré : ${nomClient} doit ${total} F${montantRemiseClamp > 0 ? ` (remise ${montantRemiseClamp} F)` : ''}`); return
     }
     if (modePaiement === 'especes' && Number(montantDonne) < total) { alert(`Il manque ${total - Number(montantDonne)} F !`); return }
-    const nouvelleVente = { items: detail, total: total, date: new Date().toISOString(), benefice, detail: detailPrix, paiement: modePaiement, remise: montantRemiseClamp }
+    const nouvelleVente = {vendeur: utilisateur ? utilisateur.nomAffiche : 'Inconnu',items: detail, total: total, date: new Date().toISOString(), benefice, detail: detailPrix, paiement: modePaiement, remise: montantRemiseClamp }
     setVentes([...ventes, nouvelleVente])
     setVentesToutTemps([...ventesToutTemps, nouvelleVente])
     setDerniereVente(nouvelleVente)
