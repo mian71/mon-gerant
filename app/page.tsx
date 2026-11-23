@@ -537,7 +537,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     }
     const sousTotal = vente.detail ? vente.detail.reduce((s, d) => s + d.qte * d.prix, 0) : vente.total + (vente.remise || 0)
     const ligneRemise = (vente.remise || 0) > 0 ? `\n🏷️ Remise : -${vente.remise} F` : ""
-    const texte = `🧾 *REÇU - ${nomAffiche}*\n📅 ${vente.date ? new Date(vente.date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR')} à ${vente.date ? new Date(vente.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''}\n💳 Paiement : ${labelPaiement(vente.paiement)}\n\n${lignes}\n\nSous-total : ${sousTotal} F${ligneRemise}\n💰 *TOTAL : ${vente.total} F*\n\nMerci de ta visite chez ${nomAffiche} ! 😊\nÀ très bientôt 🙏`
+    const texte = `🧾 *REÇU - ${nomAffiche}*\n📅 ${vente.date ? new Date(vente.date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR')} à ${vente.date ? new Date(vente.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''}\n💳 Paiement : ${labelPaiement(vente.paiement)}\n👤 Vendu par : ${vente.vendeur || 'Inconnu'}\n\n${lignes}\n\nSous-total : ${sousTotal} F${ligneRemise}\n💰 *TOTAL : ${vente.total} F*\n\nMerci de ta visite chez ${nomAffiche} ! 😊\nÀ très bientôt 🙏`
     window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`, '_blank')
   }
 
