@@ -774,10 +774,9 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
       return
     }
 
-    const nouvellesVentes: Vente[] = parts.map((part, idx) => {
-      const partBenefice = idx === 0 ? Math.round(beneficeTotal * (part.montant / total)) : idx === parts.length - 1 ? beneficeTotal - Math.round(beneficeTotal * (parts[0].montant / total)) : Math.round(beneficeTotal * (part.montant / total))
-      return { items: `${detail} (Mixte ${part.paiement})`, total: part.montant, date: new Date().toISOString(), benefice: partBenefice, detail: idx === 0 ? detailPrix : [], paiement: part.paiement, remise: idx === 0 ? montantRemiseClamp : 0 }
-    })
+    const resumeMixte = parts.map(p => `${labelPaiement(p.paiement)} ${p.montant} F`).join(' + ')
+    const nouvelleVente: any = { items: `${detail} (Mixte)`, total: total, date: new Date().toISOString(), benefice: beneficeTotal, detail: detailPrix, paiement: 'mixte', remise: montantRemiseClamp, mixte_especes: Number(mixteEspeces) || 0, mixte_wave: Number(mixteWave) || 0, mixte_orange: Number(mixteOrange) || 0, resumeMixte: resumeMixte }
+    const nouvellesVentes: Vente[] = [nouvelleVente]
     setVentes([...ventes, ...nouvellesVentes])
     setVentesToutTemps([...ventesToutTemps, ...nouvellesVentes])
     setDerniereVente(nouvellesVentes[0])
