@@ -994,7 +994,14 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
      <div style={{ background: '#fff7ed', padding: 10, borderRadius: 8, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
   <span>👤 Connecté : <b>{utilisateur.nomAffiche}</b> {caisseOuverte ? `• 🟢 Caisse ouverte` : '• 🔴 Caisse fermée'}</span>
   {caisseOuverte ? (
-    <button onClick={() => { alert(`Clôture de ${utilisateur.nomAffiche} : ${ventes.reduce((s,v)=>s+v.total,0)} F`); setCaisseOuverte(null); setUtilisateur(null); setNomLogin(''); setMdpLogin(''); }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🔴 Clôturer & Déconnexion</button>
+    <button onClick={() => { 
+  alert(`Clôture de ${utilisateur.nomAffiche} : ${ventes.reduce((s,v)=>s+v.total,0)} F`); 
+  setVentes([]); 
+  setCaisseOuverte(null); 
+  setUtilisateur(null); 
+  setNomLogin(''); 
+  setMdpLogin(''); 
+}} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🔴 Clôturer & Déconnexion</button>
   ) : (
     <>
       <button onClick={() => setCaisseOuverte({ nom: utilisateur.nomAffiche, debut: new Date() })} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🟢 Ouvrir ma caisse & Monter</button>
@@ -1640,7 +1647,35 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             <button onClick={creerCommande} style={{ width: '100%', padding: 12, background: '#0891b2', color: 'white', border: 'none', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer' }}>📦 Mettre en Commande {total} F - {nomCommande || '...'}</button>
           </div>
         </div>
+{/* ===== TABLEAU PATRON - À COLLER ICI ===== */}
+{utilisateur?.nomAffiche === 'Patron' && (
+  <div style={{ background: '#0f172a', color: 'white', padding: 15, borderRadius: 12, marginBottom: 15 }}>
+    <h3 style={{ margin: '0 0 10px 0' }}>👑 Tableau de Bord Patron</h3>
+    <div style={{ display: 'flex', gap: 10, textAlign: 'center' }}>
+      <div style={{ flex: 1, background: '#1e293b', padding: 10, borderRadius: 8 }}>
+        <div style={{ fontSize: 12, opacity: 0.8 }}>☀️ JOUR</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesToutTemps.filter(v => v.vendeur === 'Jour').reduce((s,v)=>s+v.total,0)} F</div>
+        <div style={{ fontSize: 11, opacity: 0.7 }}>{ventesToutTemps.filter(v => v.vendeur === 'Jour').length} ventes</div>
+      </div>
+      <div style={{ flex: 1, background: '#1e293b', padding: 10, borderRadius: 8 }}>
+        <div style={{ fontSize: 12, opacity: 0.8 }}>🌙 NUIT</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesToutTemps.filter(v => v.vendeur === 'Nuit').reduce((s,v)=>s+v.total,0)} F</div>
+        <div style={{ fontSize: 11, opacity: 0.7 }}>{ventesToutTemps.filter(v => v.vendeur === 'Nuit').length} ventes</div>
+      </div>
+      <div style={{ flex: 1, background: '#0891b2', padding: 10, borderRadius: 8 }}>
+        <div style={{ fontSize: 12 }}>💰 TOTAL</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesToutTemps.reduce((s,v)=>s+v.total,0)} F</div>
+        <div style={{ fontSize: 11 }}>{ventesToutTemps.length} ventes</div>
+      </div>
+    </div>
+  </div>
+)}
 
+{/* ===== TON HISTORIQUE DU JOUR - NE TOUCHE PAS ===== */}
+{
+  ventes.length > 0 && (
+    <div style={{ marginTop: 20 }}>
+      <h3>📋 Historique du jour</h3>
         {
           ventes.length > 0 && (
             <div style={{ marginTop: 20 }}>
