@@ -70,10 +70,11 @@ export default function Home() {
   const [utilisateur, setUtilisateur] = useState(null);
   const [nomLogin, setNomLogin] = useState('');
   const [mdpLogin, setMdpLogin] = useState('');
-  const [caisseOuverte, setCaisseOuverte] = useState(null); // { nom: 'matin', debut: Date }
+  const [caisseOuverte, setCaisseOuverte] = useState(null); // { nom: 'jour', debut: Date }
   const [comptes, setComptes] = useState([
-  { user: 'matin', mdp: '1234', nomAffiche: 'Gérant Matin' },
-  { user: 'nuit', mdp: '1234', nomAffiche: 'Gérant Nuit' },
+  { user: 'jour', mdp: 'g@01', nomAffiche: 'Gérant Jour' },
+  { user: 'nuit', mdp: 'g@02', nomAffiche: 'Gérant Nuit' },
+  { user: 'patron', mdp: 'g@03', nomAffiche: 'Patron' },
 ]);
   
   const chargerVentesPatron = async () => {
@@ -981,10 +982,10 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
   return (
     <div style={{ padding: 20, maxWidth: 400, margin: '40px auto', textAlign: 'center' }}>
       <h2>🔐 Connexion Gérant</h2>
-      <input value={nomLogin} onChange={e => setNomLogin(e.target.value)} placeholder="Nom d'utilisateur... ex: matin" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
+      <input value={nomLogin} onChange={e => setNomLogin(e.target.value)} placeholder="Nom d'utilisateur... ex: jour" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
       <input type="password" value={mdpLogin} onChange={e => setMdpLogin(e.target.value)} placeholder="Mot de passe" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
       <button onClick={seConnecter} style={{ width: '100%', padding: 12, background: '#0891b2', color: 'white', border: 'none', borderRadius: 8, fontWeight: 'bold' }}>Entrer</button>
-      <p style={{ fontSize: 12, color: '#666', marginTop: 10 }}>Test : matin / 1234 ou nuit / 1234</p>
+      <p style={{ fontSize: 12, color: '#666', marginTop: 10 }}>Test : jour / 1234 ou nuit / 1234</p>
     </div>
   );
 }
