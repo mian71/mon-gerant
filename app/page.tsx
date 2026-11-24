@@ -985,20 +985,22 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
       <input value={nomLogin} onChange={e => setNomLogin(e.target.value)} placeholder="Nom d'utilisateur... ex: jour" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
       <input type="password" value={mdpLogin} onChange={e => setMdpLogin(e.target.value)} placeholder="Mot de passe" style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #ccc', marginBottom: 8 }} />
       <button onClick={seConnecter} style={{ width: '100%', padding: 12, background: '#0891b2', color: 'white', border: 'none', borderRadius: 8, fontWeight: 'bold' }}>Entrer</button>
-      <p style={{ fontSize: 12, color: '#666', marginTop: 10 }}>Test : jour / 1234 ou nuit / 1234</p>
+      <p style={{ fontSize: 12, color: '#666', marginTop: 10 }}>Veuillez entrer vos identifiants</p>
     </div>
   );
 }
   return ( 
     <div style={{ padding: 20, fontFamily: 'sans-serif', maxWidth: 500, margin: '0 auto' }}>
-      <div style={{ background: '#fff7ed', padding: 10, borderRadius: 8, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+     <div style={{ background: '#fff7ed', padding: 10, borderRadius: 8, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
   <span>👤 Connecté : <b>{utilisateur.nomAffiche}</b> {caisseOuverte ? `• 🟢 Caisse ouverte` : '• 🔴 Caisse fermée'}</span>
   {caisseOuverte ? (
-    <button onClick={() => { alert(`Clôture de ${utilisateur.nomAffiche} : ${ventes.reduce((s,v)=>s+v.total,0)} F`); setCaisseOuverte(null); setUtilisateur(null); }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🔴 Clôturer & Descendre</button>
+    <button onClick={() => { alert(`Clôture de ${utilisateur.nomAffiche} : ${ventes.reduce((s,v)=>s+v.total,0)} F`); setCaisseOuverte(null); setUtilisateur(null); setNomLogin(''); setMdpLogin(''); }} style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🔴 Clôturer & Déconnexion</button>
   ) : (
-    <button onClick={() => setCaisseOuverte({ nom: utilisateur.nomAffiche, debut: new Date() })} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🟢 Ouvrir ma caisse & Monter</button>
+    <>
+      <button onClick={() => setCaisseOuverte({ nom: utilisateur.nomAffiche, debut: new Date() })} style={{ background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🟢 Ouvrir ma caisse & Monter</button>
+      <button onClick={() => { setUtilisateur(null); setNomLogin(''); setMdpLogin(''); }} style={{ background: '#e5e7eb', border: 'none', borderRadius: 8, padding: '6px 10px', fontWeight: 'bold' }}>🚪 Déconnexion</button>
+    </>
   )}
-  <button onClick={() => setUtilisateur(null)} style={{ background: '#e5e7eb', border: 'none', borderRadius: 8, padding: '6px 10px' }}>Quitter</button>
 </div>
       {/* --- BOUTIQUE TEMPS RÉEL --- */}
       {!boutiqueId ? (
