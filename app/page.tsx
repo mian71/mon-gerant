@@ -96,7 +96,13 @@ export default function Home() {
     console.log('Erreur chargerVentesPatron:', e);
   }
 };
- 
+
+  useEffect(() => {
+  if (utilisateur?.nomAffiche === 'Patron') {
+    chargerVentesPatron()
+  }
+}, [utilisateur])
+  
   // --- BOUTIQUE TEMPS REEL / MULTI-BOUTIQUES ---
   const [boutiqueId, setBoutiqueId] = useState("")
   const [codeBoutique, setCodeBoutique] = useState("")
@@ -1654,18 +1660,18 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     <div style={{ display: 'flex', gap: 10, textAlign: 'center' }}>
       <div style={{ flex: 1, background: '#1e293b', padding: 10, borderRadius: 8 }}>
         <div style={{ fontSize: 12, opacity: 0.8 }}>☀️ JOUR</div>
-        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesToutTemps.filter(v => v.vendeur?.toLowerCase().includes('jour')).reduce((s,v)=>s+v.total,0)} F</div>
-        <div style={{ fontSize: 11, opacity: 0.7 }}>{ventesToutTemps.filter(v => v.vendeur?.toLowerCase().includes('jour')).length} ventes</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesPatron.filter(v => v.vendeur?.toLowerCase().includes('jour')).reduce((s,v)=>s+Number(v.total ?? v.montant ?? 0),0)} F</div>
+        <div style={{ fontSize: 11, opacity: 0.7 }}>{ventesPatron.filter(v => v.vendeur?.toLowerCase().includes('jour')).length} ventes</div>
       </div>
       <div style={{ flex: 1, background: '#1e293b', padding: 10, borderRadius: 8 }}>
         <div style={{ fontSize: 12, opacity: 0.8 }}>🌙 NUIT</div>
-        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesToutTemps.filter(v => v.vendeur?.toLowerCase().includes('nuit')).reduce((s,v)=>s+v.total,0)} F</div>
-        <div style={{ fontSize: 11, opacity: 0.7 }}>{ventesToutTemps.filter(v => v.vendeur?.toLowerCase().includes('nuit')).length} ventes</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesPatron.filter(v => v.vendeur?.toLowerCase().includes('nuit')).reduce((s,v)=>s+Number(v.total ?? v.montant ?? 0),0)} F</div>
+        <div style={{ fontSize: 11, opacity: 0.7 }}>{ventesPatron.filter(v => v.vendeur?.toLowerCase().includes('nuit')).length} ventes</div>
       </div>
       <div style={{ flex: 1, background: '#0891b2', padding: 10, borderRadius: 8 }}>
         <div style={{ fontSize: 12 }}>💰 TOTAL</div>
-        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesToutTemps.reduce((s,v)=>s+v.total,0)} F</div>
-        <div style={{ fontSize: 11 }}>{ventesToutTemps.length} ventes</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold' }}>{ventesPatron.reduce((s,v)=>s+Number(v.total ?? v.montant ?? 0),0)} F</div>
+        <div style={{ fontSize: 11 }}>{ventesPatron.length} ventes</div>
       </div>
     </div>
   </div>
