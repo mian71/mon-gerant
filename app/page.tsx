@@ -1214,31 +1214,51 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
               <span>💰 Ventes du jour : <strong>{ventes.length}</strong></span>
               <span>Total jour : <strong>{totalJour} F</strong></span>
             </div>
-            <div style={{ background: 'white', padding: 10, borderRadius: 8, marginTop: 10 }}>
-              <strong>💰 Ma caisse du jour :</strong>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>💵 Espèces (dans la caisse)</span><strong>{totalEspeces} F</strong></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>🟦 Wave (sur le téléphone)</span><strong>{totalWave} F</strong></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>🟧 Orange Money</span><strong>{totalOrange} F</strong></div>
-            </div>
-            <div style={{ marginTop: 8, fontSize: 16, background: '#dcfce7', padding: 8, borderRadius: 8, textAlign: 'center' }}>
-              💚 <strong>Bénéfice brut du jour : {beneficeBrut} F</strong>
-            </div>
-            {totalRemisesJour > 0 && (
-              <div style={{ marginTop: 8, fontSize: 14, background: '#fdf2f8', padding: 8, borderRadius: 8, textAlign: 'center' }}>
-                🏷️ <strong>Remises données aujourd'hui : {totalRemisesJour} F</strong>
-              </div>
-            )}
-            <div style={{ marginTop: 8, fontSize: 16, background: '#fee2e2', padding: 8, borderRadius: 8, textAlign: 'center' }}>
-              💸 <strong>Dépenses du jour : {totalDepenses} F</strong>
-            </div>
-            <div style={{ marginTop: 8, fontSize: 18, background: '#16a34a', color: 'white', padding: 10, borderRadius: 8, textAlign: 'center' }}>
-              💚 <strong>Bénéfice NET du jour : {beneficeNet} F</strong>
-            </div>
-            {dettes.length > 0 && (
-              <div style={{ marginTop: 8, fontSize: 16, background: '#fee2e2', padding: 8, borderRadius: 8, textAlign: 'center' }}>
-                📒 <strong>On te doit : {totalDettes} F</strong> ({dettes.length} personnes)
-              </div>
-            )}
+           {/* ===== MA CAISSE DU JOUR - PATRON / GERANT ===== */}
+{utilisateur?.nomAffiche === 'Patron' ? (
+  <>
+    <div style={{ background: 'white', padding: 10, borderRadius: 8, marginTop: 10 }}>
+      <strong>💰 Ma caisse du jour : (Patron - Tout le monde)</strong>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>💵 Espèces (dans la caisse)</span><strong>{ventesPatron.reduce((s,v)=>s+Number(v.mixte_especes||0)+(v.mode_paiement==='especes'?Number(v.total??v.montant??0):0),0)} F</strong></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>🟦 Wave (sur le téléphone)</span><strong>{ventesPatron.reduce((s,v)=>s+Number(v.mixte_wave||0)+(v.mode_paiement==='wave'?Number(v.total??v.montant??0):0),0)} F</strong></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>🟧 Orange Money</span><strong>{ventesPatron.reduce((s,v)=>s+Number(v.mixte_orange||0)+(v.mode_paiement==='orange'||v.mode_paiement==='orange_money'?Number(v.total??v.montant??0):0),0)} F</strong></div>
+    </div>
+    <div style={{ marginTop: 8, fontSize: 16, background: '#dcfce7', padding: 8, borderRadius: 8, textAlign: 'center' }}>
+      💚 <strong>Bénéfice brut du jour : {ventesPatron.reduce((s,v)=>s+Number(v.benefice??0),0)} F</strong>
+    </div>
+    <div style={{ marginTop: 8, fontSize: 18, background: '#16a34a', color: 'white', padding: 10, borderRadius: 8, textAlign: 'center' }}>
+      💚 <strong>Total vendu du jour : {ventesPatron.reduce((s,v)=>s+Number(v.total??v.montant??0),0)} F</strong> ({ventesPatron.length} ventes)
+    </div>
+  </>
+) : (
+  <>
+    <div style={{ background: 'white', padding: 10, borderRadius: 8, marginTop: 10 }}>
+      <strong>💰 Ma caisse du jour :</strong>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>💵 Espèces (dans la caisse)</span><strong>{totalEspeces} F</strong></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>🟦 Wave (sur le téléphone)</span><strong>{totalWave} F</strong></div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}><span>🟧 Orange Money</span><strong>{totalOrange} F</strong></div>
+    </div>
+    <div style={{ marginTop: 8, fontSize: 16, background: '#dcfce7', padding: 8, borderRadius: 8, textAlign: 'center' }}>
+      💚 <strong>Bénéfice brut du jour : {beneficeBrut} F</strong>
+    </div>
+    {totalRemisesJour > 0 && (
+      <div style={{ marginTop: 8, fontSize: 14, background: '#fdf2f8', padding: 8, borderRadius: 8, textAlign: 'center' }}>
+        🏷️ <strong>Remises données aujourd'hui : {totalRemisesJour} F</strong>
+      </div>
+    )}
+    <div style={{ marginTop: 8, fontSize: 16, background: '#fee2e2', padding: 8, borderRadius: 8, textAlign: 'center' }}>
+      💸 <strong>Dépenses du jour : {totalDepenses} F</strong>
+    </div>
+    <div style={{ marginTop: 8, fontSize: 18, background: '#16a34a', color: 'white', padding: 10, borderRadius: 8, textAlign: 'center' }}>
+      💚 <strong>Bénéfice NET du jour : {beneficeNet} F</strong>
+    </div>
+    {dettes.length > 0 && (
+      <div style={{ marginTop: 8, fontSize: 16, background: '#fee2e2', padding: 8, borderRadius: 8, textAlign: 'center' }}>
+        📒 <strong>On te doit : {totalDettes} F</strong> ({dettes.length} personnes)
+      </div>
+    )}
+  </>
+)}
             {totalDuFournisseurs > 0 && (
               <div style={{ marginTop: 8, fontSize: 16, background: '#fde68a', padding: 8, borderRadius: 8, textAlign: 'center' }}>
                 🚚 <strong>Tu dois aux fournisseurs : {totalDuFournisseurs} F</strong>
