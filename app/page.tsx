@@ -1208,12 +1208,12 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
           </div>
         )}
 
-        {role !== 'Patron' && (
-          <div style={{ background: '#fef3c7', padding: 15, borderRadius: 10, marginBottom: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>💰 Ventes du jour : {utilisateur?.nomAffiche === 'Patron' ? ventesPatron.length : ventes.length}
-Total jour : {utilisateur?.nomAffiche === 'Patron' ? ventesPatron.reduce((s,v)=>s+Number(v.total ?? v.montant ?? 0),0) : totalJour} F</strong></span>
-            </div>
+       <div style={{ background: '#fef3c7', padding: 15, borderRadius: 10, marginBottom: 20 }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <span>💰 Ventes du jour : <strong>{utilisateur?.nomAffiche === 'Patron' ? ventesPatron.length : ventes.length}</strong></span>
+    <span>📊 Total jour : <strong>{utilisateur?.nomAffiche === 'Patron' ? ventesPatron.reduce((s,v)=>s+Number(v.total ?? v.montant ?? 0),0) : totalJour} F</strong></span>
+  </div>
+</div>
            {/* ===== MA CAISSE DU JOUR - PATRON / GERANT ===== */}
 {utilisateur?.nomAffiche === 'Patron' ? (
   <>
