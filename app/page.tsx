@@ -1273,7 +1273,7 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
             <button onClick={annulerDerniereVente} style={{ width: '100%', padding: 10, background: '#f59e0b', color: 'white', border: 'none', borderRadius: 8, fontSize: 14, marginTop: 8, cursor: 'pointer', fontWeight: 'bold' }}>↩️ Annuler dernière vente</button>
             <button onClick={nouvelleJournee} style={{ width: '100%', padding: 10, background: '#ef4444', color: 'white', border: 'none', borderRadius: 8, fontSize: 14, marginTop: 8, cursor: 'pointer' }}>🗑️ Nouvelle journée - Effacer le jour (TOP gardé)</button>
           </div>
-        )}
+        
 
         <div style={{ background: '#fef3c7', padding: 15, borderRadius: 10, marginBottom: 20, border: '2px solid #d97706' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
