@@ -1733,5 +1733,5 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
 </div>
 </div>
 </div>
-)
-}
+
+
