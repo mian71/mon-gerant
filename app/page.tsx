@@ -1742,7 +1742,7 @@ const retirerStockPanier = () => produits.map(prod => { const vendu = panier.fil
     </div>
   )}
 </div>
-
+</div>
 )
 }
 
