@@ -691,7 +691,7 @@ ventesPourTop.forEach(v => {
     if (nomAffiche !== 'Patron') { alert("⛔ Seul le Patron peut toucher au stock !"); return }
     setProduits(produits.map((p, i) => { if (i !== index) return p; return { ...p, stock: Math.max(0, (p.stock || 0) + delta) } }))
   const retirerStockPanier = () => produits.map(prod => { const vendu = panier.filter(p => p.nom === prod.nom).length; return { ...prod, stock: prod.stock - vendu } })
-  
+      }
   const creerCommande = () => {
     if (panier.length === 0) { alert("Ton panier est vide !"); return }
     if (!nomCommande.trim()) { alert("Tape le nom de la cliente qui commande ! Ex: Awa"); return }
@@ -1732,7 +1732,7 @@ ventesPourTop.forEach(v => {
       <textarea value={codeSauvegarde} onChange={e => setCodeSauvegarde(e.target.value)} placeholder="Colle ton code ici..." rows={2} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginTop: 6, fontSize: 12 }} />
       <button onClick={restaurerSauvegarde} style={{ width: '100%', padding: 8, background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 'bold', marginTop: 6, cursor: 'pointer' }}>♻️ Restaurer maintenant</button>
     </div>
-  )}
+  
 </div>
 </div>
 
