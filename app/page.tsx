@@ -699,7 +699,7 @@ const modifierStock = (index: number, delta: number) => {
     setProduits(produits.map((p, i) => { if (i !== index) return p; return { ...p, stock: Math.max(0, (p.stock || 0) + delta) } }))
 }
 const retirerStockPanier = () => produits.map(prod => { const vendu = panier.filter(p => p.nom === prod.nom).length; return { ...prod, stock: prod.stock - vendu } })
-  
+}
   const creerCommande = () => {
     if (panier.length === 0) { alert("Ton panier est vide !"); return }
     if (!nomCommande.trim()) { alert("Tape le nom de la cliente qui commande ! Ex: Awa"); return }
