@@ -675,23 +675,31 @@ ventesPourTop.forEach(v => {
  const ouvrirEdit = (idx: number) => {
     if (nomAffiche !== 'Patron') { alert("⛔ Seul le Patron peut modifier !"); return }
     const p = produits[idx]
- 
-   const sauverEdit = () => {
+    setEditIndex(idx); setEditNom(p.nom); setEditPrix(String(p.prix)); setEditAchat(String(p.achat || 0))
+}
+
+const sauverEdit = () => {
     if (nomAffiche !== 'Patron') { alert("⛔ Seul le Patron peut modifier !"); return }
     if (editIndex === null) return
-   
-    const ajouterAuPanier = (produit: Produit, idx: number) => {
+    setProduits(produits.map((p, i) => i === editIndex ? { ...p, nom: editNom, prix: Number(editPrix) || 0, achat: Number(editAchat) || 0 } : p))
+    setEditIndex(null)
+    alert("✅ Produit corrigé !")
+}
+
+const ajouterAuPanier = (produit: Produit, idx: number) => {
     const qte = getQuantite(idx)
     const dejaDansPanier = panier.filter(p => p.nom === produit.nom).length
     if (dejaDansPanier + qte > (produit.stock || 0)) { alert(`⛔ Il ne reste que ${produit.stock - dejaDansPanier} x ${produit.nom} en stock !`); return }
     setPanier([...panier, ...Array(qte).fill(produit)])
     setQuantites({ ...quantites, [idx]: 1 }); setRecherche("")
-  }
-  const modifierStock = (index: number, delta: number) => {
+}
+
+const modifierStock = (index: number, delta: number) => {
     if (nomAffiche !== 'Patron') { alert("⛔ Seul le Patron peut toucher au stock !"); return }
     setProduits(produits.map((p, i) => { if (i !== index) return p; return { ...p, stock: Math.max(0, (p.stock || 0) + delta) } }))
-  const retirerStockPanier = () => produits.map(prod => { const vendu = panier.filter(p => p.nom === prod.nom).length; return { ...prod, stock: prod.stock - vendu } })
-      }
+}
+const retirerStockPanier = () => produits.map(prod => { const vendu = panier.filter(p => p.nom === prod.nom).length; return { ...prod, stock: prod.stock - vendu } })
+  
   const creerCommande = () => {
     if (panier.length === 0) { alert("Ton panier est vide !"); return }
     if (!nomCommande.trim()) { alert("Tape le nom de la cliente qui commande ! Ex: Awa"); return }
