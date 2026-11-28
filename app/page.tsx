@@ -432,8 +432,10 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
     window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`, '_blank')
   }
 
-  const statsProduits: Record<string, { nom: string, qte: number, total: number, benefice: number }> = {}
-  ventesToutTemps.forEach(v => {
+  // ✅ TOP GLOBAL POUR LE PATRON
+const ventesPourTop = nomAffiche === 'Patron' ? ventesPatron : ventesToutTemps
+const statsProduits: Record<string, { nom: string, qte: number, total: number, benefice: number }> = {}
+ventesPourTop.forEach(v => {
     if (!v.items) return
     const itemsPropres = v.items.replace(/ \(Crédit .*\)$/, "").replace(/ \(Mixte.*\)$/, "")
     itemsPropres.split(', ').forEach(part => {
@@ -474,9 +476,9 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
   const medailles = ['🥇', '🥈', '🥉']
   const topVendus = [...listeStats].sort((a, b) => b.qte - a.qte).slice(0, 3)
   const topRentables = [...listeStats].sort((a, b) => b.benefice - a.benefice).slice(0, 3)
-  const beneficeToutTemps = calculerBenefice(ventesToutTemps) - ventesToutTemps.reduce((a, v) => a + (v.remise || 0), 0)
-  const totalVenduToutTemps = ventesToutTemps.reduce((a, v) => a + (v.total || 0), 0)
-
+  const beneficeToutTemps = calculerBenefice(ventesPourTop) - ventesPourTop.reduce((a, v) => a + (v.remise || 0), 0)
+  const totalVenduToutTemps = ventesPourTop.reduce((a, v) => a + (v.total || 0), 0)
+ 
   const ajouterDepense = () => {
     if (!nomDepense || !montantDepense) { alert("Mets le nom et le montant ! Ex: Transport - 2000"); return }
     setDepenses([...depenses, { nom: nomDepense, montant: Number(montantDepense), date: new Date().toISOString() }])
