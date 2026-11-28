@@ -754,7 +754,7 @@ const retirerStockPanier = () => produits.map(prod => { const vendu = panier.fil
     window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`, '_blank')
   }
 
-  const encaisserMixte = async () => {
+    const encaisserMixte = async () => {
     if (panier.length === 0) return
     if (!mixteOk) { alert(`La somme ne fait pas ${total} F !\nTu as mis ${sommeMixte} F, il ${resteMixte > 0 ? `manque ${resteMixte} F` : `y a ${-resteMixte} F en trop`}.`); return }
     const comptage: Record<string, number> = {}
