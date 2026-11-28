@@ -1740,8 +1740,7 @@ const retirerStockPanier = () => produits.map(prod => { const vendu = panier.fil
       <textarea value={codeSauvegarde} onChange={e => setCodeSauvegarde(e.target.value)} placeholder="Colle ton code ici..." rows={2} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginTop: 6, fontSize: 12 }} />
       <button onClick={restaurerSauvegarde} style={{ width: '100%', padding: 8, background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 'bold', marginTop: 6, cursor: 'pointer' }}>♻️ Restaurer maintenant</button>
     </div>
-  
-
+  )}
 </div>
 
 )
