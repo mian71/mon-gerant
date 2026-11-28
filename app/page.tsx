@@ -1699,17 +1699,19 @@ const labelPaiement = (p: string) => p === 'wave' ? '🟦 Wave' : p === 'orange'
 
 {/* ===== HISTORIQUE DU JOUR ===== */}
 {
-  ventes.length > 0 && (
+  (utilisateur?.nomAffiche === 'Patron' ? ventesPatron : ventes).length > 0 && (
     <div style={{ marginTop: 20 }}>
-      <h3>📋 Historique du jour</h3>
+      <h3>📋 Historique du jour {utilisateur?.nomAffiche === 'Patron' ? '(Tout le monde)' : ''}</h3>
       <p style={{ fontSize: 13, color: '#666' }}>Ça c'est juste aujourd'hui. Le TOP en haut compte depuis le début.</p>
-      {ventes.map((v, i) => (
+      {(utilisateur?.nomAffiche === 'Patron' ? ventesPatron : ventes).map((v, i) => (
         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '8px 10px', borderRadius: 8, marginBottom: 5 }}>
-          <span>Vente #{i + 1} : {v.items} = {v.total} F • {labelPaiement(v.paiement)}{(v.remise || 0) > 0 ? ` • 🏷️ −${v.remise} F` : ''} {v.date ? `• ${new Date(v.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''} • 👤 {v.vendeur || 'Inconnu'}</span>
+          <span>Vente #{i + 1} : {v.items || v.produits || 'Vente'} = {v.total ?? v.montant} F • {labelPaiement(v.paiement || v.mode_paiement)}{(v.remise || 0) > 0 ? ` • 🏷️ −${v.remise} F` : ''} {(v.date || v.created_at) ? `• ${new Date(v.date || v.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}` : ''} • 👤 {v.vendeur || v.vendeur_nom || v.gerant || 'Inconnu'}</span>
           <button onClick={() => envoyerRecu(v)} style={{ background: '#25D366', color: 'white', border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 'bold' }}>🧾 Reçu</button>
         </div>
       ))}
-      <button onClick={nouvelleJournee} style={{ background: '#fee2e2', border: 'none', padding: '10px 15px', borderRadius: 8, marginTop: 10 }}>🗑️ Effacer l'historique du jour (TOP gardé)</button>
+      {utilisateur?.nomAffiche !== 'Patron' && (
+        <button onClick={nouvelleJournee} style={{ background: '#fee2e2', border: 'none', padding: '10px 15px', borderRadius: 8, marginTop: 10 }}>🗑️ Effacer l'historique du jour (TOP gardé)</button>
+      )}
     </div>
   )
 }
