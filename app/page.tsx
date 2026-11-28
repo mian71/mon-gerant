@@ -1741,7 +1741,7 @@ const retirerStockPanier = () => produits.map(prod => { const vendu = panier.fil
       <button onClick={restaurerSauvegarde} style={{ width: '100%', padding: 8, background: '#16a34a', color: 'white', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 'bold', marginTop: 6, cursor: 'pointer' }}>♻️ Restaurer maintenant</button>
     </div>
   
-</div>
+
 </div>
 
 )
